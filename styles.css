@@ -2,3 +2,48 @@
     display: flex;
     flex-direction: row;
 }
+
+#title {
+    margin: auto;
+    text-align: center;
+}
+
+#word_display {
+    color: #80381a;
+}
+
+#display_area {
+    background: #c0c0c0;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+#word_input {
+    display: flex;
+    justify-content: center;
+}
+
+#nav_bar {
+    display: flex;
+    justify-content: center;
+}
+
+.nav_button {
+    margin-top: 10px;
+    margin-bottom: 100px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.highlight {
+    color: #0000ff;
+}
+
+.correct {
+    color: #00ff00;
+}
+
+.wrong {
+    color: #ff0000;
+}
