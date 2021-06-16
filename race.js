@@ -1,9 +1,28 @@
+// temp variables
 let text = 'Hello World This is ME testing'
 let text1 = 'hello world test this car'
 let text2 = 'hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car'
+
+
 let wordDisplay = document.getElementById('word_display')
 let wordInput = document.getElementById('word_input')
 let currWord = null
+
+
+class RaceWord extends HTMLElement {
+    constructor(string) {
+        super()
+        this.string = string
+        this.innerHTML = string + '\u00A0'
+    }
+
+    compare(string) {
+        return this.string === string
+    }
+}
+window.customElements.define('race-word', RaceWord)
+
+
 
 
 function removeChildren(parent) {
@@ -11,28 +30,6 @@ function removeChildren(parent) {
         parent.firstChild.remove()
     }
 }
-
-        /*
-        if(key === 'Enter') {
-            console.log(wordInput.value)
-        } else if(key === current.innerHTML) {
-            if(key === ' ') wordInput.value = ''
-            current.className = ''
-            current.classList.add('correct')
-            current = current.nextSibling
-            current.classList.add('highlight')
-        } else if(key === 'Backspace') {
-            current.className = ''
-            current = current.previousSibling
-            current.className = ''
-            current.classList.add('highlight')
-        } else if(key !== current.innerHTML) {
-            current.className = ''
-            current.classList.add('wrong')
-            current = current.nextSibling
-            current.classList.add('highlight')
-        }
-        */
 
 function jumpToNextWord(correct) {
     wordInput.value = ''
@@ -60,40 +57,41 @@ function jumpToPreviousWord() {
 }
 
 function onWordInputChange(e) {
+    //word1 = wordInput.value + e.key
+    word1 = wordInput.value
+    word2 = currWord.innerHTML.slice(0, word1.length)
+    console.log(word1)
+    console.log(word2)
     if(e.key.length == 1) {
         if(e.key == ' ') {
-            jumpToNextWord(false)
+            let bool = currWord.compare(word1.slice(0, -1))
+            console.log(bool)
+            jumpToNextWord(bool)
         } else {
-            console.log('typed a character')
-            word1 = wordInput.value + e.key
-            word2 = currWord.innerHTML.slice(0, word1.length)
             currWord.className = word1 === word2 ? 'highlight' : 'wrong'
-            console.log(word1)
-            console.log(word2)
         }
     } else if(e.key == 'Backspace') {
         //jumpToPreviousWord()
+        currWord.className = word1 === word2 ? 'highlight' : 'wrong'
     }
 }
 
 function displayText(text) {
     removeChildren(wordDisplay)
     let words = text.split(' ')
-    words.forEach(word => {
-        let span = document.createElement('span')
-        span.innerHTML = word + '\u00A0'
-        wordDisplay.appendChild(span)
+    words.forEach(string => {
+        race_word = new RaceWord(string)
+        wordDisplay.appendChild(race_word)
     })
 }
 
-function init() {
+function main() {
     wordInput.value = ''
     displayText(text2)
-    //displayText(text1)
     currWord = wordDisplay.firstChild
     currWord.classList.add('highlight')
     wordInput.onkeydown = onWordInputChange
     wordInput.focus()
 }
 
-init()
+main()
