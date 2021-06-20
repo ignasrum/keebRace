@@ -25,6 +25,11 @@ window.customElements.define('race-word', RaceWord)
 
 
 
+
+
+
+
+
 function removeChildren(parent) {
     while(parent.firstChild) {
         parent.firstChild.remove()
@@ -56,22 +61,32 @@ function jumpToPreviousWord() {
     }
 }
 
-function onWordInputChange(e) {
-    //word1 = wordInput.value + e.key
-    word1 = wordInput.value
-    word2 = currWord.innerHTML.slice(0, word1.length)
-    console.log(word1)
-    console.log(word2)
+function onWordInputKeyUp(e) {
+    if(e.key == ' ') {
+        word1 = wordInput.value
+        word2 = currWord.innerHTML.slice(0, word1.length)
+        console.log("test, word1: " + word1)
+        console.log("test, word2: " + word2)
+        let bool = currWord.compare(word1.slice(0, -1))
+        console.log(bool)
+        jumpToNextWord(bool)
+        wordInput.value = ''
+    }
+}
+
+function onWordInputKeyDown(e) {
     if(e.key.length == 1) {
-        if(e.key == ' ') {
-            let bool = currWord.compare(word1.slice(0, -1))
-            console.log(bool)
-            jumpToNextWord(bool)
-        } else {
+        word1 = wordInput.value + e.key
+        word2 = currWord.innerHTML.slice(0, word1.length)
+        console.log("onWorldInputChange, word1: " + word1)
+        console.log("onWorldInputChange, word2: " + word2)
+        if(e.key != ' ') {
             currWord.className = word1 === word2 ? 'highlight' : 'wrong'
         }
     } else if(e.key == 'Backspace') {
-        //jumpToPreviousWord()
+        word1 = wordInput.value
+        word2 = currWord.innerHTML.slice(0, word1.length)
+        jumpToPreviousWord()
         currWord.className = word1 === word2 ? 'highlight' : 'wrong'
     }
 }
@@ -90,7 +105,8 @@ function main() {
     displayText(text2)
     currWord = wordDisplay.firstChild
     currWord.classList.add('highlight')
-    wordInput.onkeydown = onWordInputChange
+    wordInput.onkeydown = onWordInputKeyDown
+    wordInput.onkeyup = onWordInputKeyUp
     wordInput.focus()
 }
 
