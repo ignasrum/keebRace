@@ -4,30 +4,26 @@ let text1 = 'hello world test this car'
 let text2 = 'hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car'
 
 
-let wordDisplay = document.getElementById('word_display')
-let wordInput = document.getElementById('word_input')
+let wordDisplay = document.getElementById('word-display')
+let wordInput = document.getElementById('word-input')
+let timerSelect = document.getElementById('timer-select')
 let currWord = null
-
+let started = false
+let correctWords = 0
+let correctChars = 0
 
 class RaceWord extends HTMLElement {
-    constructor(string) {
+    constructor(value) {
         super()
-        this.string = string
-        this.innerHTML = string + '\u00A0'
+        this.value = value
+        this.innerHTML = value + '\u00A0'
     }
 
-    compare(string) {
-        return this.string === string
+    compare(value) {
+        return this.value === value
     }
 }
 window.customElements.define('race-word', RaceWord)
-
-
-
-
-
-
-
 
 
 function removeChildren(parent) {
@@ -40,7 +36,11 @@ function jumpToNextWord(correct) {
     wordInput.value = ''
     if(!currWord) return
     currWord.className = ''
-    if(correct) currWord.className = 'correct'
+    if(correct) {
+        currWord.className = 'correct'
+        correctWords += 1
+        correctChars += currWord.value.length
+    }
     else currWord.className = 'wrong'
     if(!currWord.nextSibling) return
     currWord = currWord.nextSibling
@@ -64,7 +64,7 @@ function jumpToPreviousWord() {
 function onWordInputKeyUp(e) {
     if(e.key == ' ') {
         word1 = wordInput.value
-        word2 = currWord.innerHTML.slice(0, word1.length)
+        word2 = currWord.value.slice(0, word1.length)
         console.log("test, word1: " + word1)
         console.log("test, word2: " + word2)
         let bool = currWord.compare(word1.slice(0, -1))
@@ -75,9 +75,13 @@ function onWordInputKeyUp(e) {
 }
 
 function onWordInputKeyDown(e) {
+    if(started == false) {
+        setTimeout(test, timerSelect.value * 1000)
+        started = true
+    }
     if(e.key.length == 1) {
         word1 = wordInput.value + e.key
-        word2 = currWord.innerHTML.slice(0, word1.length)
+        word2 = currWord.value.slice(0, word1.length)
         console.log("onWorldInputChange, word1: " + word1)
         console.log("onWorldInputChange, word2: " + word2)
         if(e.key != ' ') {
@@ -85,7 +89,7 @@ function onWordInputKeyDown(e) {
         }
     } else if(e.key == 'Backspace') {
         word1 = wordInput.value
-        word2 = currWord.innerHTML.slice(0, word1.length)
+        word2 = currWord.value.slice(0, word1.length)
         jumpToPreviousWord()
         currWord.className = word1 === word2 ? 'highlight' : 'wrong'
     }
@@ -93,18 +97,28 @@ function onWordInputKeyDown(e) {
 
 function displayText(text) {
     removeChildren(wordDisplay)
+    wordInput.value = ''
     let words = text.split(' ')
-    words.forEach(string => {
-        race_word = new RaceWord(string)
+    words.forEach(value => {
+        race_word = new RaceWord(value)
         wordDisplay.appendChild(race_word)
     })
+    currWord = wordDisplay.firstChild
+    currWord.classList.add('highlight')
+}
+
+function test() {
+    console.log("testing timeout")
+    let wpm = (correctChars/5) / (timerSelect.value / 60)
+    alert("Correct words: " + correctWords + "\nCorrect characters: " + correctChars + "\nWPM: " + wpm)
+    started = false
+    correctWords = 0
+    correctChars = 0
+    displayText(text2)
 }
 
 function main() {
-    wordInput.value = ''
     displayText(text2)
-    currWord = wordDisplay.firstChild
-    currWord.classList.add('highlight')
     wordInput.onkeydown = onWordInputKeyDown
     wordInput.onkeyup = onWordInputKeyUp
     wordInput.focus()
