@@ -1,12 +1,8 @@
-// temp variables
-let text = 'Hello World This is ME testing'
-let text1 = 'hello world test this car'
-let text2 = 'hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car hello world test this car'
-
-
 let wordDisplay = document.getElementById('word-display')
 let wordInput = document.getElementById('word-input')
 let timerSelect = document.getElementById('timer-select')
+let wordSelect = document.getElementById('word-select')
+let redoButton = document.getElementById('button-redo')
 let currWord = null
 let started = false
 let correctWords = 0
@@ -72,6 +68,11 @@ function onWordInputKeyUp(e) {
         jumpToNextWord(bool)
         wordInput.value = ''
     }
+    if(e.key == "Backspace") {
+        word1 = wordInput.value
+        word2 = currWord.value.slice(0, word1.length)
+        currWord.className = word1 === word2 ? 'highlight' : 'wrong'   
+    }
 }
 
 function onWordInputKeyDown(e) {
@@ -90,19 +91,34 @@ function onWordInputKeyDown(e) {
     } else if(e.key == 'Backspace') {
         word1 = wordInput.value
         word2 = currWord.value.slice(0, word1.length)
-        jumpToPreviousWord()
+        if (word1.length == 0) {
+            jumpToPreviousWord()
+        }
         currWord.className = word1 === word2 ? 'highlight' : 'wrong'
+        console.log("currWord: ", currWord)
     }
 }
 
-function generateText(filePath) {
-    console.log(filePath) 
+function generateRandomInt(from, to) {
+    return Math.floor(Math.random() * to)
 }
 
-function fetchFile(filePath) {
-    fetch(filePath)
-        .then(response => response.json())
-        .catch(err => console.error(err))
+async function fetchFile(filePath) {
+    let numberOfWords = parseInt(wordSelect.value)
+
+    let response = await fetch(filePath)
+    if (response.status == 200) {
+        let json = await response.json()
+        let arr = [...Array(numberOfWords).keys()]
+        let numberOfWordsLibrary = json["english"].length
+        let text = ""
+        arr.forEach(i => {
+            let random = generateRandomInt(0, numberOfWordsLibrary) 
+            text += json["english"][random] + " "
+        })
+        return text.slice(0, -1)
+    }
+    return ""
 }
 
 function displayText(text) {
@@ -117,19 +133,20 @@ function displayText(text) {
     currWord.classList.add('highlight')
 }
 
-function test() {
+async function test() {
     console.log("testing timeout")
-    let wpm = (correctChars/5) / (timerSelect.value / 60)
+    let wpm = (correctChars / 5) / (parseInt(timerSelect.value) / 60)
     alert("Correct words: " + correctWords + "\nCorrect characters: " + correctChars + "\nWPM: " + wpm)
     started = false
     correctWords = 0
     correctChars = 0
-    displayText(text2)
+    let text = await fetchFile("words/random.json")
+    displayText(text)
 }
 
-function main() {
-    fetchFile("words/random.json")
-    displayText(text2)
+async function main() {
+    let text = await fetchFile("words/random.json")
+    displayText(text)
     wordInput.onkeydown = onWordInputKeyDown
     wordInput.onkeyup = onWordInputKeyUp
     wordInput.focus()
