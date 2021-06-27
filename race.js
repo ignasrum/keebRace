@@ -58,44 +58,32 @@ function jumpToPreviousWord() {
 }
 
 function onWordInputKeyUp(e) {
-    if(e.key == ' ') {
-        word1 = wordInput.value
-        word2 = currWord.value.slice(0, word1.length)
-        console.log("test, word1: " + word1)
-        console.log("test, word2: " + word2)
+    if(e.key == "Backspace") {
+        if (wordInput.value.length == 0) {
+            jumpToPreviousWord()
+        }
+    }
+}
+
+function onWordInputChange(e) {
+    console.log(e)
+    if(started == false) {
+        setTimeout(test, parseInt(timerSelect.value) * 1000)
+        started = true
+    }
+    word1 = wordInput.value
+    word2 = currWord.value.slice(0, word1.length)
+    currWord.className = word1 === word2 ? 'highlight' : 'wrong'
+    console.log("test2, word1: " + word1)
+    console.log("test2, word2: " + word2)
+    if(e.inputType == "insertText" && e.data == " ") {
         let bool = currWord.compare(word1.slice(0, -1))
         console.log(bool)
         jumpToNextWord(bool)
         wordInput.value = ''
     }
-    if(e.key == "Backspace") {
-        word1 = wordInput.value
-        word2 = currWord.value.slice(0, word1.length)
-        currWord.className = word1 === word2 ? 'highlight' : 'wrong'   
-    }
-}
-
-function onWordInputKeyDown(e) {
-    if(started == false) {
-        setTimeout(test, timerSelect.value * 1000)
-        started = true
-    }
-    if(e.key.length == 1) {
-        word1 = wordInput.value + e.key
-        word2 = currWord.value.slice(0, word1.length)
-        console.log("onWorldInputChange, word1: " + word1)
-        console.log("onWorldInputChange, word2: " + word2)
-        if(e.key != ' ') {
-            currWord.className = word1 === word2 ? 'highlight' : 'wrong'
-        }
-    } else if(e.key == 'Backspace') {
-        word1 = wordInput.value
-        word2 = currWord.value.slice(0, word1.length)
-        if (word1.length == 0) {
-            jumpToPreviousWord()
-        }
-        currWord.className = word1 === word2 ? 'highlight' : 'wrong'
-        console.log("currWord: ", currWord)
+    if(e.inputType == "deleteContentBackward") {
+        console.log("BACKSPACE")
     }
 }
 
@@ -144,11 +132,22 @@ async function test() {
     displayText(text)
 }
 
+function reset(text) {
+    started = false
+    displayText(text)
+}
+
+async function onWordSelectChange(e) {
+    let text = await fetchFile("words/random.json")
+    reset(text)
+}
+
 async function main() {
     let text = await fetchFile("words/random.json")
     displayText(text)
-    wordInput.onkeydown = onWordInputKeyDown
     wordInput.onkeyup = onWordInputKeyUp
+    wordInput.addEventListener("input", onWordInputChange)
+    wordSelect.onchange = onWordSelectChange
     wordInput.focus()
 }
 
