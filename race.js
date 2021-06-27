@@ -95,13 +95,23 @@ function onWordInputKeyDown(e) {
     }
 }
 
+function generateText(filePath) {
+    console.log(filePath) 
+}
+
+function fetchFile(filePath) {
+    fetch(filePath)
+        .then(response => response.json())
+        .catch(err => console.error(err))
+}
+
 function displayText(text) {
     removeChildren(wordDisplay)
     wordInput.value = ''
     let words = text.split(' ')
     words.forEach(value => {
-        race_word = new RaceWord(value)
-        wordDisplay.appendChild(race_word)
+        raceWord = new RaceWord(value)
+        wordDisplay.appendChild(raceWord)
     })
     currWord = wordDisplay.firstChild
     currWord.classList.add('highlight')
@@ -118,6 +128,7 @@ function test() {
 }
 
 function main() {
+    fetchFile("words/random.json")
     displayText(text2)
     wordInput.onkeydown = onWordInputKeyDown
     wordInput.onkeyup = onWordInputKeyUp
