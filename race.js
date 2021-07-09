@@ -1,12 +1,17 @@
 let wordDisplay = document.getElementById('word-display')
 let wordInput = document.getElementById('word-input')
 let timerSelect = document.getElementById('timer-select')
-let wordSelect = document.getElementById('word-select')
-let redoButton = document.getElementById('button-redo')
+let newButton = document.getElementById('button-new')
+let imgLight = document.getElementById('img-light')
+let infoWPM= document.getElementById('div-info-wpm')
+let infoTime = document.getElementById('div-info-time')
 let currWord = null
 let started = false
+let timeLeft = 0
 let correctWords = 0
 let correctChars = 0
+let numberOfWords = 50
+let intervalID = -1
 
 class RaceWord extends HTMLElement {
     constructor(value) {
@@ -23,9 +28,7 @@ window.customElements.define('race-word', RaceWord)
 
 
 function removeChildren(parent) {
-    while(parent.firstChild) {
-        parent.firstChild.remove()
-    }
+    while(parent.firstChild) { parent.firstChild.remove() }
 }
 
 function jumpToNextWord(correct) {
@@ -66,24 +69,20 @@ function onWordInputKeyUp(e) {
 }
 
 function onWordInputChange(e) {
-    console.log(e)
     if(started == false) {
-        setTimeout(test, parseInt(timerSelect.value) * 1000)
+        test()
         started = true
     }
     word1 = wordInput.value
     word2 = currWord.value.slice(0, word1.length)
     currWord.className = word1 === word2 ? 'highlight' : 'wrong'
-    console.log("test2, word1: " + word1)
-    console.log("test2, word2: " + word2)
+    wordInput.className = word1 === word2 ? 'input-normal' : 'input-wrong'
     if(e.inputType == "insertText" && e.data == " ") {
         let bool = currWord.compare(word1.slice(0, -1))
         console.log(bool)
         jumpToNextWord(bool)
         wordInput.value = ''
-    }
-    if(e.inputType == "deleteContentBackward") {
-        console.log("BACKSPACE")
+        wordInput.className = 'input-normal'
     }
 }
 
@@ -92,8 +91,6 @@ function generateRandomInt(from, to) {
 }
 
 async function fetchFile(filePath) {
-    let numberOfWords = parseInt(wordSelect.value)
-
     let response = await fetch(filePath)
     if (response.status == 200) {
         let json = await response.json()
@@ -111,7 +108,8 @@ async function fetchFile(filePath) {
 
 function displayText(text) {
     removeChildren(wordDisplay)
-    wordInput.value = ''
+    wordInputalue = ''
+    wordInput.className = 'input-normal'
     let words = text.split(' ')
     words.forEach(value => {
         raceWord = new RaceWord(value)
@@ -122,24 +120,56 @@ function displayText(text) {
 }
 
 async function test() {
-    console.log("testing timeout")
-    let wpm = (correctChars / 5) / (parseInt(timerSelect.value) / 60)
-    alert("Correct words: " + correctWords + "\nCorrect characters: " + correctChars + "\nWPM: " + wpm)
+    imgLight.src = "images/green.png"
+    intervalID = setInterval(test1, 1000)
+    timeLeft = parseInt(timerSelect.value)
+    infoTime.innerHTML = "Time: " + timeLeft  
+    timerSelect.disabled = true
+}
+
+async function test1() {
+    timeLeft -= 1
+    if (timeLeft > 0) {
+        let wpm = (correctChars / 5) / (parseInt(timerSelect.value) / 60)
+        infoWPM.innerHTML = "WPM: " + wpm
+        infoTime.innerHTML = "Time: " + timeLeft
+    } else {
+        //onReset(1)
+        raceFinished()
+        wordInput.disabled = true
+    }
+}
+
+function raceFinished() {
+    if (intervalID != -1) {
+        clearInterval(intervalID)
+    }
+    imgLight.src = "images/red.png"
+    infoTime.innerHTML = "Time: " + 0
+    intervalID = -1
+    wordInput.value = ""
+}
+
+function fullReset(text) {
+    if (intervalID != -1) {
+        clearInterval(intervalID)
+    }
+    imgLight.src = "images/red.png"
+    intervalID = -1
     started = false
     correctWords = 0
     correctChars = 0
-    let text = await fetchFile("words/random.json")
+    infoWPM.innerHTML = "WPM: XX"
+    infoTime.innerHTML = "Time: XX"
+    timerSelect.disabled = false
+    wordInput.value = ""
+    wordInput.disabled = false
     displayText(text)
 }
 
-function reset(text) {
-    started = false
-    displayText(text)
-}
-
-async function onWordSelectChange(e) {
+async function onReset(e) {
     let text = await fetchFile("words/random.json")
-    reset(text)
+    fullReset(text)
 }
 
 async function main() {
@@ -147,7 +177,7 @@ async function main() {
     displayText(text)
     wordInput.onkeyup = onWordInputKeyUp
     wordInput.addEventListener("input", onWordInputChange)
-    wordSelect.onchange = onWordSelectChange
+    newButton.onclick = onReset
     wordInput.focus()
 }
 
