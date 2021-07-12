@@ -8,8 +8,8 @@ let infoTime = document.getElementById('div-info-time')
 let currWord = null
 let started = false
 let timeLeft = 0
-let correctWords = 0
 let correctChars = 0
+let totalChars = 0
 let numberOfWords = 50
 let intervalID = -1
 
@@ -37,10 +37,10 @@ function jumpToNextWord(correct) {
     currWord.className = ''
     if(correct) {
         currWord.className = 'correct'
-        correctWords += 1
         correctChars += currWord.value.length
     }
     else currWord.className = 'wrong'
+    totalChars += currWord.value.length
     if(!currWord.nextSibling) return
     currWord = currWord.nextSibling
     currWord.className = 'highlight'
@@ -55,6 +55,7 @@ function jumpToPreviousWord() {
         currWord.className = 'highlight'
     } else {
         currWord.className = ''
+        totalChars -= currWord.value.length
         currWord = currWord.previousSibling
         currWord.className = 'highlight'
     }
@@ -70,7 +71,7 @@ function onWordInputKeyUp(e) {
 
 function onWordInputChange(e) {
     if(started == false) {
-        test()
+        startRace()
         started = true
     }
     word1 = wordInput.value
@@ -79,7 +80,6 @@ function onWordInputChange(e) {
     wordInput.className = word1 === word2 ? 'input-normal' : 'input-wrong'
     if(e.inputType == "insertText" && e.data == " ") {
         let bool = currWord.compare(word1.slice(0, -1))
-        console.log(bool)
         jumpToNextWord(bool)
         wordInput.value = ''
         wordInput.className = 'input-normal'
@@ -119,22 +119,23 @@ function displayText(text) {
     currWord.classList.add('highlight')
 }
 
-async function test() {
+async function startRace() {
     imgLight.src = "images/green.png"
-    intervalID = setInterval(test1, 1000)
+    intervalID = setInterval(updateRace, 1000)
     timeLeft = parseInt(timerSelect.value)
     infoTime.innerHTML = "Time: " + timeLeft  
     timerSelect.disabled = true
 }
 
-async function test1() {
+async function updateRace() {
     timeLeft -= 1
     if (timeLeft > 0) {
-        let wpm = (correctChars / 5) / (parseInt(timerSelect.value) / 60)
+        let words = correctChars / 5
+        let time = (parseInt(timerSelect.value) - timeLeft) / 60
+        let wpm = Math.floor(words / time)
         infoWPM.innerHTML = "WPM: " + wpm
         infoTime.innerHTML = "Time: " + timeLeft
     } else {
-        //onReset(1)
         raceFinished()
         wordInput.disabled = true
     }
@@ -157,8 +158,8 @@ function fullReset(text) {
     imgLight.src = "images/red.png"
     intervalID = -1
     started = false
-    correctWords = 0
     correctChars = 0
+    totalChars = 0
     infoWPM.innerHTML = "WPM: XX"
     infoTime.innerHTML = "Time: XX"
     timerSelect.disabled = false
@@ -170,15 +171,14 @@ function fullReset(text) {
 async function onReset(e) {
     let text = await fetchFile("words/random.json")
     fullReset(text)
+    wordInput.focus()
 }
 
 async function main() {
-    let text = await fetchFile("words/random.json")
-    displayText(text)
     wordInput.onkeyup = onWordInputKeyUp
     wordInput.addEventListener("input", onWordInputChange)
     newButton.onclick = onReset
-    wordInput.focus()
+    onReset(1)
 }
 
 main()
