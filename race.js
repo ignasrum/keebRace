@@ -6,12 +6,13 @@ let imgLight = document.getElementById('img-light')
 let infoWPM= document.getElementById('div-info-wpm')
 let infoTime = document.getElementById('div-info-time')
 
+let TARGET_WPM = 200
+
 let currWord = null
 let started = false
 let timeLeft = 0
 let correctChars = 0
 let totalChars = 0
-let numberOfWords = 50
 let intervalID = -1
 
 class RaceWord extends HTMLElement {
@@ -91,17 +92,19 @@ function generateRandomInt(from, to) {
     return Math.floor(Math.random() * to)
 }
 
-async function fetchFile(filePath) {
+async function makeText(filePath, charCount) {
     let response = await fetch(filePath)
     if (response.status == 200) {
         let json = await response.json()
-        let arr = [...Array(numberOfWords).keys()]
         let numberOfWordsLibrary = json["english"].length
         let text = ""
-        arr.forEach(i => {
+        let curChars = 0
+        while(curChars <= charCount) {
             let random = generateRandomInt(0, numberOfWordsLibrary) 
-            text += json["english"][random] + " "
-        })
+            word = json["english"][random]
+            text += word + " "
+            curChars += word.length
+        }
         return text.slice(0, -1)
     }
     return ""
@@ -170,15 +173,20 @@ function fullReset(text) {
 }
 
 async function onReset(e) {
-    let text = await fetchFile("words/random.json")
+    let text = await makeText("words/random.json", charsForWPM(TARGET_WPM, timerSelect.value/60))
     fullReset(text)
     wordInput.focus()
+}
+
+function charsForWPM(wpm, time) {
+    return wpm * time * 5
 }
 
 async function main() {
     wordInput.onkeyup = onWordInputKeyUp
     wordInput.addEventListener("input", onWordInputChange)
     newButton.onclick = onReset
+    timerSelect.onchange = onReset
     onReset(1)
 }
 
