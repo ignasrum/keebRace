@@ -9,10 +9,9 @@ let infoTime = document.getElementById('div-info-time')
 let TARGET_WPM = 200
 
 let currWord = null
-let started = false
-let timeLeft = 0
-let correctChars = 0
 let totalChars = 0
+let correctChars = 0
+let timeLeft = 0
 let intervalID = -1
 
 class RaceWord extends HTMLElement {
@@ -21,17 +20,12 @@ class RaceWord extends HTMLElement {
         this.value = value
         this.innerHTML = value + '\u00A0'
     }
-
     compare(value) {
         return this.value === value
     }
 }
 window.customElements.define('race-word', RaceWord)
 
-
-function removeChildren(parent) {
-    while(parent.firstChild) { parent.firstChild.remove() }
-}
 
 function jumpToNextWord(correct) {
     wordInput.value = ''
@@ -72,14 +66,14 @@ function onWordInputKeyUp(e) {
 }
 
 function onWordInputChange(e) {
-    if(started == false) {
+    if(timeLeft == 0) {
         startRace()
-        started = true
     }
     word1 = wordInput.value
     word2 = currWord.value.slice(0, word1.length)
     currWord.className = word1 === word2 ? 'highlight' : 'wrong'
     wordInput.className = word1 === word2 ? 'input-normal' : 'input-wrong'
+    // if space entered
     if(e.inputType == "insertText" && e.data == " ") {
         let bool = currWord.compare(word1.slice(0, -1))
         jumpToNextWord(bool)
@@ -88,22 +82,18 @@ function onWordInputChange(e) {
     }
 }
 
-function generateRandomInt(from, to) {
-    return Math.floor(Math.random() * to)
-}
-
-async function makeText(filePath, charCount) {
+async function makeText(filePath, charTarget) {
     let response = await fetch(filePath)
     if (response.status == 200) {
         let json = await response.json()
         let numberOfWordsLibrary = json["english"].length
         let text = ""
-        let curChars = 0
-        while(curChars <= charCount) {
-            let random = generateRandomInt(0, numberOfWordsLibrary) 
+        let chars = 0
+        while(chars <= charTarget) {
+            let random = Math.floor(Math.random() * numberOfWordsLibrary)
             word = json["english"][random]
             text += word + " "
-            curChars += word.length
+            chars += word.length
         }
         return text.slice(0, -1)
     }
@@ -111,8 +101,7 @@ async function makeText(filePath, charCount) {
 }
 
 function displayText(text) {
-    removeChildren(wordDisplay)
-    wordInputalue = ''
+    while(wordDisplay.firstChild) wordDisplay.firstChild.remove()
     wordInput.className = 'input-normal'
     let words = text.split(' ')
     words.forEach(value => {
@@ -161,9 +150,8 @@ function fullReset(text) {
     }
     imgLight.src = "images/red.png"
     intervalID = -1
-    started = false
-    correctChars = 0
     totalChars = 0
+    correctChars = 0
     infoWPM.innerHTML = "WPM: XX"
     infoTime.innerHTML = "Time: XX"
     timerSelect.disabled = false
