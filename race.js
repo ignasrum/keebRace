@@ -175,7 +175,7 @@ async function main() {
     wordInput.addEventListener("input", onWordInputChange)
     newButton.onclick = onReset
     timerSelect.onchange = onReset
-    wpdfSelect.onchange = onReset
+    wpmSelect.onchange = onReset
     onReset(1)
 }
 
