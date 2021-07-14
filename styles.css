@@ -2,6 +2,7 @@
     margin: auto;
     text-align: center;
     font-family: Sans-serif;
+    font-size: min(3.5vw, 25px);
 }
 
 #nav-bar {
@@ -14,20 +15,20 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-top: 100px;
-    font-family: Sans-serif;
+    margin-top: 12vh;
 }
 
 #display-area {
-    border-radius: 15px;
     background: #EDEDED;
     display: flex;
-    width: 50%;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     font-family: Sans-serif;
-    margin-top: 100px;
+    font-size: min(3vw, 15px);
+    border-radius: min(3vw, 15px);
+    width: min(900px, 70vw);
+    margin-top: 12vh;
 }
 
 #word-display {
@@ -35,21 +36,24 @@
     flex-direction: row;
     flex-wrap: wrap;
     color: #4D4D4D;
-    margin: 1% 1% 1% 1%;
+    margin: min(1%, 10px);
 }
 
 #word-input {
-    border-radius: 10px;
+    font-family: Sans-serif;
+    font-size: min(3vw, 15px);
+    border-radius: min(0.5vw, 5px);
+    margin: min(1%, 10px);
     width: 90%;
-    margin: 1% 1% 1% 1%;
 }
 
 .nav-element {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
     font-family: Sans-serif;
+    font-size: min(3vw, 15px);
+    margin-top: min(1vh, 10px);
+    margin-bottom: min(0.5vh, 5px);
+    margin-left: min(0.5vw, 5px);
+    margin-right: min(0.5vw, 5px);
 }
 
 .word {
@@ -61,7 +65,7 @@
 }
 
 .correct {
-    color: #025A0B;
+    color: #03A113;
 }
 
 .wrong {
@@ -76,5 +80,4 @@
 .input-wrong{
     color: #000000;
     background-color: #FF6166;
-    /*background-color: #FF7F7F;*/
 }

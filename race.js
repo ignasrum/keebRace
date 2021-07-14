@@ -5,6 +5,7 @@ let newButton = document.getElementById('button-new')
 let imgLight = document.getElementById('img-light')
 let infoWPM= document.getElementById('div-info-wpm')
 let infoTime = document.getElementById('div-info-time')
+
 let currWord = null
 let started = false
 let timeLeft = 0
