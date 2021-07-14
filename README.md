@@ -3,7 +3,8 @@
 
 ### Features
 * Type test time selection
-* Dynamic character count - relative to target WPM (200) and time selection
+* Target WPM selection
+* Dynamic character count - relative to target WPM and time selection
 * Responsive design
 
 ![screenshot](./images/keebRace.png)

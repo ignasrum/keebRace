@@ -1,12 +1,11 @@
 let wordDisplay = document.getElementById('word-display')
 let wordInput = document.getElementById('word-input')
 let timerSelect = document.getElementById('timer-select')
+let wpmSelect = document.getElementById('wpm-select')
 let newButton = document.getElementById('button-new')
 let imgLight = document.getElementById('img-light')
 let infoWPM= document.getElementById('div-info-wpm')
 let infoTime = document.getElementById('div-info-time')
-
-let TARGET_WPM = 200
 
 let currWord = null
 let totalChars = 0
@@ -161,7 +160,8 @@ function fullReset(text) {
 }
 
 async function onReset(e) {
-    let text = await makeText("words/random.json", charsForWPM(TARGET_WPM, timerSelect.value/60))
+    let targetWPM = parseInt(wpmSelect.value)
+    let text = await makeText("words/random.json", charsForWPM(targetWPM, timerSelect.value/60))
     fullReset(text)
     wordInput.focus()
 }
@@ -175,6 +175,7 @@ async function main() {
     wordInput.addEventListener("input", onWordInputChange)
     newButton.onclick = onReset
     timerSelect.onchange = onReset
+    wpdfSelect.onchange = onReset
     onReset(1)
 }
 
