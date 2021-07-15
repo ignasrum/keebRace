@@ -117,6 +117,7 @@ async function startRace() {
     timeLeft = parseInt(timerSelect.value)
     infoTime.innerHTML = "Time: " + timeLeft  
     timerSelect.disabled = true
+    wpmSelect.disabled = true
 }
 
 async function updateRace() {
@@ -154,6 +155,7 @@ function fullReset(text) {
     infoWPM.innerHTML = "WPM: XX"
     infoTime.innerHTML = "Time: XX"
     timerSelect.disabled = false
+    wpmSelect.disabled = false
     wordInput.value = ""
     wordInput.disabled = false
     displayText(text)
