@@ -65,6 +65,7 @@ function onWordInputKeyUp(e) {
 }
 
 function onWordInputChange(e) {
+    console.log(timeLeft)
     if(timeLeft == 0) {
         startRace()
     }
@@ -150,6 +151,7 @@ function fullReset(text) {
     }
     imgLight.src = "images/red.png"
     intervalID = -1
+    timeLeft = 0
     totalChars = 0
     correctChars = 0
     infoWPM.innerHTML = "WPM: XX"
