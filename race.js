@@ -8,7 +8,6 @@ let infoWPM= document.getElementById('div-info-wpm')
 let infoTime = document.getElementById('div-info-time')
 
 let currWord = null
-let totalChars = 0
 let correctChars = 0
 let timeLeft = 0
 let intervalID = -1
@@ -22,20 +21,24 @@ class RaceWord extends HTMLElement {
     compare(value) {
         return this.value === value
     }
+    setUserInput(input) {
+        this.userInput = input
+    }
 }
 window.customElements.define('race-word', RaceWord)
 
 
 function jumpToNextWord(correct) {
+    userInput = wordInput.value.slice(0, -1)
     wordInput.value = ''
     if(!currWord) return
+    currWord.setUserInput(userInput)
     currWord.className = ''
     if(correct) {
         currWord.className = 'correct'
         correctChars += currWord.value.length
     }
     else currWord.className = 'wrong'
-    totalChars += currWord.value.length
     if(!currWord.nextSibling) return
     currWord = currWord.nextSibling
     currWord.className = 'highlight'
@@ -50,9 +53,10 @@ function jumpToPreviousWord() {
         currWord.className = 'highlight'
     } else {
         currWord.className = ''
-        totalChars -= currWord.value.length
         currWord = currWord.previousSibling
+        wordInput.value = currWord.userInput
         currWord.className = 'highlight'
+        onWordInputChange(1)
     }
 }
 
@@ -65,7 +69,6 @@ function onWordInputKeyUp(e) {
 }
 
 function onWordInputChange(e) {
-    console.log(timeLeft)
     if(timeLeft == 0) {
         startRace()
     }
@@ -152,7 +155,6 @@ function fullReset(text) {
     imgLight.src = "images/red.png"
     intervalID = -1
     timeLeft = 0
-    totalChars = 0
     correctChars = 0
     infoWPM.innerHTML = "WPM: XX"
     infoTime.innerHTML = "Time: XX"
