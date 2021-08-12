@@ -1,5 +1,6 @@
 # keebRace
-## Simple typing test website written in pure HTML, CSS and Javascript
+
+A simple typing test website written in pure HTML, CSS and Javascript
 
 ### Features
 * Type test time selection
