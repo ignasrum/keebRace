@@ -1,3 +1,8 @@
+body {
+    background-color: #404040;
+    color: #FFFFFF;
+}
+
 #title {
     margin: auto;
     text-align: center;
@@ -19,7 +24,7 @@
 }
 
 #display-area {
-    background: #EDEDED;
+    background: #404040;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,7 +40,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    color: #4D4D4D;
+    color: #FFFFFF;
     margin: min(1%, 10px);
 }
 
@@ -61,15 +66,15 @@
 }
 
 .highlight {
-    color: #0000A8;
+    color: #00F5F1;
 }
 
 .correct {
-    color: #03A113;
+    color: #04F61C;
 }
 
 .wrong {
-    color: #A30000;
+    color: #FFCF66;
 }
 
 .input-normal {
@@ -77,7 +82,7 @@
     background-color: #FFFFFF;
 }
 
-.input-wrong{
+.input-wrong {
     color: #000000;
-    background-color: #FF6166;
+    background-color: #FFCF66;
 }
